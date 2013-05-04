@@ -45,3 +45,29 @@ class Question
   end
 end
 
+class String
+  def self.parse(token, replacements)
+    new(token)
+  end
+end
+
+unless ARGV.size == 1 and test(?e, ARGV[0])
+  puts "Usage: #{File.basename($PROGRAM_NAME)} MADLIB_FILE"
+  exit
+end
+madlib = <<MADLIB
+
+MADLIB
+
+tokens = madlib.split(/(\(\([^)]+)\)\)/).map do |token|
+  token[0..1] == "((" ? token.gsub(/\s+/, " ") : token
+end
+
+answers = Hash.new
+story = tokens.map do |token|
+  [Replacement, Question, String].inject(false) do |element, kind|
+  element = kind.parse?(token, answers) and break element
+  end
+end
+
+puts story.join
